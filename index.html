@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WorkplanLink Tester Programme</title>
+<style>
+:root{
+  --bg:#FFFFFF; --panel:#F2F6FA; --ink:#14202E; --ink-soft:#3A4A5E; --faint:#6A7A8C;
+  --line:#C3D0DF; --line-soft:#DCE5EE; --navy:#1A4F8C; --navy-deep:#123A68;
+  --green:#0F6E5C; --amber:#9A6212; --red:#B42318;
+  --mono:'DM Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'DM Sans','Helvetica Neue',Arial,sans-serif;
+  --display:'Syne','Helvetica Neue',Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1826; --panel:#16263A; --ink:#EAF1F8; --ink-soft:#B6C6D6; --faint:#8197AC;
+  --line:#2C4157; --line-soft:#223346; --navy:#6BA7E8; --navy-deep:#9CC6F2;
+  --green:#4FC2A8; --amber:#E0A94A; --red:#F07A6E; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0E1826; --panel:#16263A; --ink:#EAF1F8; --ink-soft:#B6C6D6; --faint:#8197AC;
+  --line:#2C4157; --line-soft:#223346; --navy:#6BA7E8; --navy-deep:#9CC6F2;
+  --green:#4FC2A8; --amber:#E0A94A; --red:#F07A6E; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding-inline:20px;padding-block:0}
+a{color:var(--navy)}
+h1,h2,h3{text-wrap:balance}
+
+/* header */
+.top{border-bottom:1px solid var(--line);padding-block:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);font-weight:500}
+.tag{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+
+/* hero */
+.hero{padding-block:40px 28px}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin:0 0 14px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,52px);line-height:1.03;letter-spacing:-.02em;margin:0 0 18px}
+.lede{font-size:clamp(16px,2.3vw,19px);line-height:1.5;color:var(--ink-soft);margin:0;max-width:62ch}
+
+/* cta */
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:700;font-size:16px;text-decoration:none;border-radius:10px;padding:14px 22px;border:1.5px solid var(--navy);transition:transform .05s ease}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-deep);border-color:var(--navy-deep)}
+.btn-ghost{background:transparent;color:var(--navy)}
+.btn-ghost:hover{background:var(--panel)}
+.btn:active{transform:translateY(1px)}
+
+section{padding-block:30px;border-top:1px solid var(--line-soft)}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(21px,3.4vw,27px);margin:0 0 18px;letter-spacing:-.01em}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line)}
+.step{padding:18px 18px 20px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:7px}
+.step:last-child{border-right:none}
+.step-n{font-family:var(--mono);font-weight:500;color:var(--navy);font-size:13px}
+.step-h{font-family:var(--display);font-weight:700;font-size:17px}
+.step-b{font-size:14px;color:var(--ink-soft);line-height:1.45}
+@media(max-width:620px){.steps{grid-template-columns:1fr}.step{border-right:none;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:none}}
+
+/* output picker */
+.picker{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+.picker label{display:block;font-weight:700;font-size:14px;margin:0 0 8px}
+.selwrap{position:relative}
+select{width:100%;font-family:var(--sans);font-size:15.5px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:9px;padding:13px 40px 13px 14px;appearance:none;cursor:pointer;line-height:1.3}
+select:focus{outline:2px solid var(--navy);outline-offset:1px;border-color:var(--navy)}
+.selwrap::after{content:"";position:absolute;right:16px;top:50%;width:9px;height:9px;border-right:2px solid var(--faint);border-bottom:2px solid var(--faint);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.pick-note{font-size:13px;color:var(--faint);margin:12px 0 0;line-height:1.45}
+.maturity{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0 0;font-size:12.5px;color:var(--ink-soft)}
+.dot{display:inline-flex;align-items:center;gap:6px}
+.dot i{width:9px;height:9px;border-radius:999px;display:inline-block}
+.dot.p i{background:var(--green)} .dot.t i{background:var(--amber)} .dot.i i{background:var(--navy)}
+.consent{display:flex;gap:11px;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.consent input{margin-top:2px;width:19px;height:19px;accent-color:var(--navy);flex:none;cursor:pointer}
+.consent label{display:block;font-weight:600;font-size:14.5px;margin:0;cursor:pointer;line-height:1.45}
+#outputzone[hidden]{display:none}
+.locked-note{font-size:13px;color:var(--faint);font-style:italic;margin:4px 0 0}
+
+/* what you get */
+.gets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.get{border:1px solid var(--line-soft);border-radius:10px;padding:16px;min-width:0}
+.get h3{font-family:var(--display);font-weight:700;font-size:16px;margin:0 0 5px}
+.get p{margin:0;font-size:14px;color:var(--ink-soft);line-height:1.45}
+@media(max-width:560px){.gets{grid-template-columns:1fr}}
+
+/* trust */
+.trust{background:var(--panel);border-radius:12px;padding:20px 22px}
+.trust ul{margin:0;padding-left:20px}
+.trust li{font-size:14.5px;color:var(--ink-soft);margin:6px 0;line-height:1.45}
+.trust li b{color:var(--ink)}
+
+/* footer */
+footer{border-top:1px solid var(--line);margin-top:10px;padding-block:24px 40px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;color:var(--faint)}
+footer .c{display:flex;flex-direction:column;gap:3px}
+footer b{color:var(--ink-soft);font-weight:500}
+.copy{display:inline-flex;align-items:center;gap:7px;border:1px dashed var(--line);border-radius:7px;padding:4px 9px;color:var(--ink-soft);cursor:pointer;background:transparent;font-family:var(--mono);font-size:12.5px}
+.copy:hover{background:var(--bg)}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="top">
+    <span class="brand">WorkplanLink · Plan Check</span>
+    <span class="tag">Tester programme · 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">An invitation to fellow architects &amp; consultants</p>
+    <h1>Let a second pair of eyes read your set — before it leaves the office.</h1>
+    <p class="lede">WorkplanLink reads a PDF drawing set the way a careful colleague would: it fixes the scale from your own dimensions, cross-checks the disciplines, counts the quantities, and hands back a plain register of what to look at. We're opening it to a small group of testers, and we'd be grateful for yours. Send one live set, pick what you'd like back, and tell us where we got it wrong.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="[FORM LINK]" target="_blank" rel="noopener">Sign in &amp; upload your set →</a>
+      <a class="btn btn-ghost" href="#how">See how it works</a>
+    </div>
+  </div>
+
+  <section id="how">
+    <p class="kicker">How it works</p>
+    <h2>Three steps, and nothing to install</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step-n">01</span>
+        <span class="step-h">Sign in with email</span>
+        <span class="step-b">Tap the button, sign in with your email, and tell us your firm and project in one short form.</span>
+      </div>
+      <div class="step">
+        <span class="step-n">02</span>
+        <span class="step-h">Upload &amp; pick outputs</span>
+        <span class="step-b">Drop in your PDF set — architectural, and structural or M&amp;E if you have them — and choose what you'd like back. If the project is sensitive, use project codes rather than real names.</span>
+      </div>
+      <div class="step">
+        <span class="step-n">03</span>
+        <span class="step-h">Get your results</span>
+        <span class="step-b">We run the set and send back your schedules and a flag register, as soon as possible, with a note on what to trust.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Choose your outputs</p>
+    <h2>What would you like the tool to produce?</h2>
+    <div class="picker">
+      <div class="consent">
+        <input type="checkbox" id="agree" aria-controls="outputzone">
+        <label for="agree">Yes — I'd like to join as a tester, and I understand my set is used only to produce what I ask for, kept private, and deleted on request.</label>
+      </div>
+      <div id="outputzone" hidden>
+      <label for="out">Pick a primary output to start with</label>
+      <div class="selwrap">
+        <select id="out" aria-label="Choose a primary output">
+          <option value="" selected>Select an output…</option>
+          <optgroup label="Coordination checks">
+            <option>Structural vs Architectural discrepancies — proven</option>
+            <option>Set integrity (title blocks, revisions, duplicates, scale bars) — proven</option>
+            <option>Scale &amp; dimension sanity check — proven</option>
+            <option>Architectural vs M&amp;E / services coordination — trial</option>
+          </optgroup>
+          <optgroup label="Quantity schedules (QTO)">
+            <option>Floor finishes by storey &amp; finish type — proven</option>
+            <option>Wall finishes, net of openings, tiles by size — proven</option>
+            <option>Combined room finishes schedule — proven</option>
+            <option>Door &amp; window schedule + aluminium area — proven</option>
+            <option>Column &amp; beam schedule from ST plans — proven</option>
+            <option>M&amp;E fittings (light / power points, sanitary) — trial</option>
+          </optgroup>
+          <optgroup label="Regulatory pre-checks (indicative)">
+            <option>Household shelter setback / downhang beam — proven</option>
+            <option>Staircase, headroom &amp; barrier-free — indicative</option>
+            <option>Room sizes, ventilation &amp; light openings — indicative</option>
+            <option>GFA tabulation by storey — indicative</option>
+          </optgroup>
+          <optgroup label="Not sure?">
+            <option>Not sure — recommend for my set</option>
+            <option>Any output you'd suggest — I'm open</option>
+            <option>Other (I'll describe it)</option>
+          </optgroup>
+        </select>
+      </div>
+      <p class="pick-note">This is just to get us started — on the upload form you can tick as many outputs as you like.</p>
+      <div class="maturity">
+        <span class="dot p"><i></i>Proven on real sets</span>
+        <span class="dot t"><i></i>Trial — still learning</span>
+        <span class="dot i"><i></i>Indicative — not a QP check</span>
+      </div>
+      </div>
+      <p class="locked-note" id="lockednote">Tick the box above to choose your outputs.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">What comes back</p>
+    <h2>Yours to keep, in formats you already use</h2>
+    <div class="gets">
+      <div class="get"><h3>Excel schedules</h3><p>Finishes, joinery, and quantity take-offs with every line traceable to a sheet, so your QS can audit them.</p></div>
+      <div class="get"><h3>Flag register</h3><p>Red / Amber / Green items with location, sheets and a suggested action — the same register we close on our own jobs.</p></div>
+      <div class="get"><h3>Marked-up PDF</h3><p>Your set with the flags drawn on, so each consultant can see exactly where to look.</p></div>
+      <div class="get"><h3>A short, honest note</h3><p>What we're confident about and what we're not — the tool is a reader and a prompt, never an approval.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Your drawings, your call</p>
+    <h2>How we treat your set</h2>
+    <div class="trust">
+      <ul>
+        <li><b>Confidentiality honoured.</b> We comply with your project's confidentiality terms. To make that easy, you're welcome to use project codes and initials in place of client and personal names before you upload — the checks work just as well on a coded set.</li>
+        <li><b>Used only for your test.</b> We run your set to produce what you asked for, and for nothing else.</li>
+        <li><b>Not shared.</b> Your drawings aren't passed to third parties or shown to other testers.</li>
+        <li><b>Deleted on request.</b> Tell us when you're done and we remove the files.</li>
+        <li><b>Coordination, not certification.</b> Design adequacy stays with the engineer of record and the QP. WorkplanLink checks whether the set agrees with itself.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="c">
+      <b>WorkplanLink Application</b>
+      <span>An App-Master initiative</span>
+    </div>
+    <div class="c">
+      <b>Questions?</b>
+      <button class="copy" id="copymail" type="button" aria-label="Copy contact email">[CONTACT EMAIL]</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var b=document.getElementById('copymail');
+  if(b){b.addEventListener('click',function(){
+    var t=b.textContent.trim();
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(function(){var o=b.textContent;b.textContent='Copied ✓';setTimeout(function(){b.textContent=o;},1400);}).catch(function(){sel();});
+    }else{sel();}
+    function sel(){var r=document.createRange();r.selectNodeContents(b);var s=window.getSelection();s.removeAllRanges();s.addRange(r);}
+  });}
+})();
+(function(){
+  var a=document.getElementById('agree'),z=document.getElementById('outputzone'),n=document.getElementById('lockednote');
+  if(a&&z){a.addEventListener('change',function(){z.hidden=!a.checked;if(n)n.hidden=a.checked;});}
+})();
+</script>
+
+</body>
+</html>
